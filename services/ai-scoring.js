@@ -1,16 +1,16 @@
-const {GoogleGenerativeAI} = require("@google/generative-ai")
+const { GoogleGenerativeAI } = require("@google/generative-ai")
 
-exports.aiCalScore = async (formData,language) => {
+exports.aiCalScore = async (formData, language) => {
     try {
-        const genAI = new GoogleGenerativeAI("AIzaSyDFQP49YT2evf8SvHVHcWDfPazJxH3egYM")
+        const genAI = new GoogleGenerativeAI()
 
         const model = genAI.getGenerativeModel({
             model: "gemini-1.5-flash",
-          });
+        });
 
         let prompt = ""
-        if(language =='en'){
-        prompt = `
+        if (language == 'en') {
+            prompt = `
         Given the following details, evaluate the suitability of the person to adopt a pet:
         Career: ${formData.career}
         Work Time: ${formData.workTime} hours/day
@@ -31,9 +31,9 @@ exports.aiCalScore = async (formData,language) => {
         
         Just give me in using this JSON schema 
         message = {'shortDetail':string, 'score':string} 
-        `; 
-        }else{
-        prompt = `
+        `;
+        } else {
+            prompt = `
         พิจารณาความเหมาะสมของบุคคลในการรับเลี้ยงสัตว์จากข้อมูลดังนี้:
         
         - อาชีพ: ${formData.career}
@@ -55,15 +55,15 @@ exports.aiCalScore = async (formData,language) => {
         
         ตอบในรูปแบบ JSON ดังนี้:
         message = {'shortDetail':string, 'score':string} 
-        `; 
+        `;
         }
-        
+
         const result = await model.generateContent(prompt);
         const outPut = await result.response.text()
         const cleanJson = outPut.replace(/```json\n|\n```/g, '');
-        
+
         return JSON.parse(cleanJson)
-       
+
     } catch (err) {
         console.log('Error during AI request:', err);
         return err;
